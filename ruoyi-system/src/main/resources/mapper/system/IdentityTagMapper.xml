@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.IdentityTagMapper">
+    
+    <resultMap type="IdentityTag" id="IdentityTagResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="sort"    column="sort"    />
+    </resultMap>
+
+    <sql id="selectIdentityTagVo">
+        select id, name, sort from identity_tag
+    </sql>
+
+    <select id="selectIdentityTagList" parameterType="IdentityTag" resultMap="IdentityTagResult">
+        <include refid="selectIdentityTagVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectIdentityTagById" parameterType="Long" resultMap="IdentityTagResult">
+        <include refid="selectIdentityTagVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertIdentityTag" parameterType="IdentityTag">
+        insert into identity_tag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="sort != null">sort,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="sort != null">#{sort},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIdentityTag" parameterType="IdentityTag">
+        update identity_tag
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="sort != null">sort = #{sort},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIdentityTagById" parameterType="Long">
+        delete from identity_tag where id = #{id}
+    </delete>
+
+    <delete id="deleteIdentityTagByIds" parameterType="String">
+        delete from identity_tag where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

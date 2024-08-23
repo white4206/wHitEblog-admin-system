@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RelatedLinkMapper">
+    
+    <resultMap type="RelatedLink" id="RelatedLinkResult">
+        <result property="id"    column="id"    />
+        <result property="linkUrl"    column="link_url"    />
+        <result property="icon"    column="icon"    />
+        <result property="title"    column="title"    />
+        <result property="sort"    column="sort"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectRelatedLinkVo">
+        select id, link_url, icon, title, sort, status, remark from related_link
+    </sql>
+
+    <select id="selectRelatedLinkList" parameterType="RelatedLink" resultMap="RelatedLinkResult">
+        <include refid="selectRelatedLinkVo"/>
+        <where>  
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="title != null  and title != ''"> and title like concat('%', #{title}, '%')</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectRelatedLinkById" parameterType="Long" resultMap="RelatedLinkResult">
+        <include refid="selectRelatedLinkVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertRelatedLink" parameterType="RelatedLink" useGeneratedKeys="true" keyProperty="id">
+        insert into related_link
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="linkUrl != null and linkUrl != ''">link_url,</if>
+            <if test="icon != null and icon != ''">icon,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="sort != null">sort,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="linkUrl != null and linkUrl != ''">#{linkUrl},</if>
+            <if test="icon != null and icon != ''">#{icon},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRelatedLink" parameterType="RelatedLink">
+        update related_link
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="linkUrl != null and linkUrl != ''">link_url = #{linkUrl},</if>
+            <if test="icon != null and icon != ''">icon = #{icon},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRelatedLinkById" parameterType="Long">
+        delete from related_link where id = #{id}
+    </delete>
+
+    <delete id="deleteRelatedLinkByIds" parameterType="String">
+        delete from related_link where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

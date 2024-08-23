@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.IpAddressMapper">
+    
+    <resultMap type="IpAddress" id="IpAddressResult">
+        <result property="id"    column="id"    />
+        <result property="ip"    column="ip"    />
+        <result property="address"    column="address"    />
+        <result property="accessTime"    column="access_time"    />
+        <result property="accessOs"    column="access_os"    />
+    </resultMap>
+
+    <sql id="selectIpAddressVo">
+        select id, ip, address, access_time, access_os from ip_address
+    </sql>
+
+    <select id="selectIpAddressList" parameterType="IpAddress" resultMap="IpAddressResult">
+        <include refid="selectIpAddressVo"/>
+        <where>  
+            <if test="ip != null  and ip != ''"> and ip = #{ip}</if>
+            <if test="address != null  and address != ''"> and address like concat('%', #{address}, '%')</if>
+            <if test="params.beginAccessTime != null and params.beginAccessTime != '' and params.endAccessTime != null and params.endAccessTime != ''"> and access_time between #{params.beginAccessTime} and #{params.endAccessTime}</if>
+            <if test="accessOs != null  and accessOs != ''"> and access_os like concat('%', #{accessOs}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectIpAddressById" parameterType="Long" resultMap="IpAddressResult">
+        <include refid="selectIpAddressVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertIpAddress" parameterType="IpAddress" useGeneratedKeys="true" keyProperty="id">
+        insert into ip_address
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ip != null and ip != ''">ip,</if>
+            <if test="address != null and address != ''">address,</if>
+            <if test="accessTime != null">access_time,</if>
+            <if test="accessOs != null and accessOs != ''">access_os,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ip != null and ip != ''">#{ip},</if>
+            <if test="address != null and address != ''">#{address},</if>
+            <if test="accessTime != null">#{accessTime},</if>
+            <if test="accessOs != null and accessOs != ''">#{accessOs},</if>
+         </trim>
+    </insert>
+
+    <update id="updateIpAddress" parameterType="IpAddress">
+        update ip_address
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ip != null and ip != ''">ip = #{ip},</if>
+            <if test="address != null and address != ''">address = #{address},</if>
+            <if test="accessTime != null">access_time = #{accessTime},</if>
+            <if test="accessOs != null and accessOs != ''">access_os = #{accessOs},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteIpAddressById" parameterType="Long">
+        delete from ip_address where id = #{id}
+    </delete>
+
+    <delete id="deleteIpAddressByIds" parameterType="String">
+        delete from ip_address where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
